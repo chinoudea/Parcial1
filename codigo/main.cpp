@@ -91,6 +91,7 @@ int main()
         cin >> Voo;
         cout << "Indique el angulo en grados del disparo: " << endl;
         cin >> angO;
+        //Prueba cambios despues de limite
         break;
     case 5:
         break;
