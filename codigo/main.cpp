@@ -16,8 +16,10 @@ int opMenu;
 double Ho, Hd, d, rangoO, rangoD, g=9.81;
 // Variables disparo ofensivo
 double Voo, Vod;  // Velocidades iniciales
-int angO, angD; //Angulos de disparo
-
+double Yo, Yd;
+double tiempo;
+int angO, angD, angTest[3]={45, 35, 30}; //Angulos de disparo
+bool flag = true;
 int main()
 {
     cout << "Bienvenido al sistema de simulacion" << endl;
@@ -42,8 +44,21 @@ int main()
     cin >> opMenu;
     switch (opMenu) {
     case 1:
-
-
+        //Para generar los 3 disparon se definiran 3 angulos definidos por el sistema 45, 50 y 60
+        //Se calcularan los Vo requeridos
+        for (int i=0; i<3; i++) {
+            flag = true;
+            Voo=0.0;
+            while (flag) {
+                tiempo = d / (Voo * cos(angTest[0]));
+                Yo = Ho + (Voo * sin(angTest[i])) - (g*pow(tiempo,2)/2);
+                if (abs(Hd-Yo)<=rangoO) {
+                    flag = false;
+                }
+                Voo+=0.1;
+            }
+            cout << "Para angulo " << angTest[i] << "y velocidad " << Voo << endl;
+        }
         break;
     case 2:
         break;
