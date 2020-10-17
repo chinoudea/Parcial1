@@ -8,6 +8,7 @@ double posXo(double Vo, int angulo, double t);
 double posYo(double Vo, int angulo, double t);
 double posXd(double Vo, int angulo, double t);
 double posYd(double Vo, int angulo, double t);
+double distancia(double X1, double Y1, double X2, double Y2);
 
 //Definicion de variables
 int opMenu;
@@ -80,5 +81,11 @@ double posXd(double Vo, int angulo, double t) {
 
 double posYd(double Vo, int angulo, double t) {
     return Hd + Vo * sin(angulo) - (g*pow(t,2))/2;
+}
+
+double distancia(double X1, double Y1, double X2, double Y2) {
+    double deltaX = X1 - X2;
+    double deltaY = Y1 - Y2;
+    return  abs(sqrt(pow(deltaX,2)+pow(deltaY,2)));
 }
 
