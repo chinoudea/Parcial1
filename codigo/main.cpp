@@ -13,7 +13,7 @@ double distancia(double X1, double Y1, double X2, double Y2);
 //Definicion de variables
 int opMenu;
 // Configuracion de escenario
-double Ho, Hd, d, g=9.81;
+double Ho, Hd, d, rangoO, rangoD, g=9.81;
 // Variables disparo ofensivo
 double Voo, Vod;  // Velocidades iniciales
 int angO, angD; //Angulos de disparo
@@ -24,6 +24,9 @@ int main()
     cout << "Por favor ingrese los parametros de configuracion de escenario" << endl;
     cout << "Inidique la distancia horizontal entre en canones: ";
     cin >> d;
+    //Se calculan rangos de impacto
+    rangoO=0.05*d;
+    rangoD=0.025*d;
     cout << "Indique la altura en metros del canon ofensivo: " << endl;
     cin >> Ho;
     cout << "Indique la altura en metros del canon defensivo: " << endl;
@@ -31,7 +34,7 @@ int main()
     // Menu para seleccionar las opciones a simular
     cout << "MENU DE OPCIONES" << endl << endl;
     cout << "1. Generar disparos (al menos tres) ofensivos que comprometan al otro canon" << endl;
-    cout << "2. Generar disparos (al menos tres) ofensivos que comprometan al otro canon" << endl;
+    cout << "2. Generar disparos (al menos tres) defensivos que comprometan al otro canon" << endl;
     cout << "3. Dado un disparo ofensivo, generar (al menos tres) disparos defensivos, sin importar el canon ofensivo" << endl;
     cout << "4. Dado un disparo ofensivo, generar (al menos tres) disparos defensivos, sin importar el canon ofensivo" << endl;
     cout << "5. Salir";
