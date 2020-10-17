@@ -1,12 +1,21 @@
 #include <iostream>
+#include <math.h>
 
 using namespace std;
+
+//Prototipos de funciones
+double posXo(double Vo, int angulo, double t);
+double posYo(double Vo, int angulo, double t);
+double posXd(double Vo, int angulo, double t);
+double posYd(double Vo, int angulo, double t);
 
 //Definicion de variables
 int opMenu;
 // Configuracion de escenario
-double Ho, Hd, d;
-
+double Ho, Hd, d, g=9.81;
+// Variables disparo ofensivo
+double Voo, Vod;  // Velocidades iniciales
+int angO, angD; //Angulos de disparo
 
 int main()
 {
@@ -29,12 +38,24 @@ int main()
     cin >> opMenu;
     switch (opMenu) {
     case 1:
+
+
         break;
     case 2:
         break;
     case 3:
+        cout << endl << "Por favor ingrese los parametros de configuracion de disparo ofensivo" << endl;
+        cout << "Indique la velocidad inicial (m/s) del disparo: ";
+        cin >> Voo;
+        cout << "Indique el angulo en grados del disparo: " << endl;
+        cin >> angO;
         break;
     case 4:
+        cout << endl << "Por favor ingrese los parametros de configuracion de disparo ofensivo" << endl;
+        cout << "Indique la velocidad inicial (m/s) del disparo: ";
+        cin >> Voo;
+        cout << "Indique el angulo en grados del disparo: " << endl;
+        cin >> angO;
         break;
     case 5:
         break;
@@ -44,3 +65,20 @@ int main()
     }
     return 0;
 }
+
+double posXo(double Vo, int angulo, double t) {
+    return Vo*cos(angulo)*t; //Dada la configuracion del escenario se considera Xo(inicial) = 0
+}
+
+double posYo(double Vo, int angulo, double t) {
+    return Ho + Vo * sin(angulo) - (g*pow(t,2))/2;
+}
+
+double posXd(double Vo, int angulo, double t) {
+    return d - Vo*cos(angulo)*t;
+}
+
+double posYd(double Vo, int angulo, double t) {
+    return Hd + Vo * sin(angulo) - (g*pow(t,2))/2;
+}
+
