@@ -43,7 +43,7 @@ int main()
     cout << "3. Dado un disparo ofensivo, generar (al menos tres) disparos defensivos, sin importar el canon ofensivo" << endl;
     cout << "4. Dado un disparo ofensivo, generar (al menos tres) disparos defensivos, sin importar el canon ofensivo" << endl;
     cout << "5. Salir" << endl;
-    cout << "Indique una opcion: ";
+    cout << endl << "Indique una opcion: ";
     cin >> opMenu;
     switch (opMenu) {
     case 1:
