@@ -4,22 +4,25 @@
 using namespace std;
 
 //Prototipos de funciones
-double posXo(double Vo, int angulo, double t);
-double posYo(double Vo, int angulo, double t);
-double posXd(double Vo, int angulo, double t);
-double posYd(double Vo, int angulo, double t);
+double posXo(double Vo, double angulo, double t);
+double posYo(double Vo, double angulo, double t);
+double posXd(double Vo, double angulo, double t);
+double posYd(double Vo, double angulo, double t);
 double distancia(double X1, double Y1, double X2, double Y2);
+double maxT(double Vo, double angulo);
 
 //Definicion de variables
 int opMenu;
 // Configuracion de escenario
-double Ho, Hd, d, rangoO, rangoD, g=9.81;
+double Ho, Hd, d, dist, rangoO, rangoD, g=9.81;
 // Variables disparo ofensivo
 double Voo, Vod;  // Velocidades iniciales
-double Yo, Yd;
-double tiempo;
-int angO, angD, angTest[3]={45, 35, 30}; //Angulos de disparo
+double Yo, Yd, Xo, Xd;
+double tiempo, maxTiempo;
+int angO, angD, angTest[3]={45, 50, 60}; //Angulos de disparo
 bool flag = true;
+double pi = 2*acos(0.0);
+
 int main()
 {
     cout << "Bienvenido al sistema de simulacion" << endl;
@@ -29,9 +32,9 @@ int main()
     //Se calculan rangos de impacto
     rangoO=0.05*d;
     rangoD=0.025*d;
-    cout << "Indique la altura en metros del canon ofensivo: " << endl;
+    cout << "Indique la altura en metros del canon ofensivo: ";
     cin >> Ho;
-    cout << "Indique la altura en metros del canon defensivo: " << endl;
+    cout << "Indique la altura en metros del canon defensivo: ";
     cin >> Hd;
     // Menu para seleccionar las opciones a simular
     cout << "MENU DE OPCIONES" << endl << endl;
@@ -39,43 +42,62 @@ int main()
     cout << "2. Generar disparos (al menos tres) defensivos que comprometan al otro canon" << endl;
     cout << "3. Dado un disparo ofensivo, generar (al menos tres) disparos defensivos, sin importar el canon ofensivo" << endl;
     cout << "4. Dado un disparo ofensivo, generar (al menos tres) disparos defensivos, sin importar el canon ofensivo" << endl;
-    cout << "5. Salir";
+    cout << "5. Salir" << endl;
     cout << "Indique una opcion: ";
     cin >> opMenu;
     switch (opMenu) {
     case 1:
-        //Para generar los 3 disparon se definiran 3 angulos definidos por el sistema 45, 50 y 60
-        //Se calcularan los Vo requeridos
+        cout << endl;
+        //Para generar los 3 disparon se define un set angulos 45, 50 y 60
+        //Se tienen conocidos el angulo y las alturas; Se calcularan los Vo requeridos
+        //Se itera en los 3 angulos definidos
         for (int i=0; i<3; i++) {
-            flag = true;
-            Voo=0.0;
-            while (flag) {
-                tiempo = d / (Voo * cos(angTest[0]));
-                Yo = Ho + (Voo * sin(angTest[i])) - (g*pow(tiempo,2)/2);
-                if (abs(Hd-Yo)<=rangoO) {
-                    flag = false;
+            flag = false;
+            //Se itera en velocidad inicial
+            for (int v=0; v<1000; v++) {
+                //Se itera en tiempo
+                for (double t=0.1; t<1000; t+=0.1) {
+                    Xo = posXo(v,angTest[i]*pi/180,t);
+                    Yo = posYo(v,angTest[i]*pi/180,t);
+                    dist = distancia(Xo,Yo,d,Hd);
+                    if (dist <=rangoO) {
+                        tiempo = t;
+                        Voo = v;
+                        flag = true;
+                        break;
+                    }
                 }
-                Voo+=0.1;
+                if (flag) break;
             }
-            cout << "Para angulo " << angTest[i] << " y velocidad " << Voo << endl;
+            cout << "Para angulo " << angTest[i] << " y velocidad " << Voo << " se logra generar danio en X=" << Xo << " y Y=" << Yo << " en tiempo " << tiempo << endl;
         }
         break;
     case 2:
-        //Para generar los 3 disparon se definiran 3 angulos definidos por el sistema 45, 50 y 60
-        //Se calcularan los Vo requeridos
+        cout << endl;
+        //Para generar los 3 disparon se define un set angulos 45, 50 y 60
+        //Se tienen conocidos el angulo y las alturas; Se calcularan los Vo requeridos
+        //Se itera en los 3 angulos definidos
         for (int i=0; i<3; i++) {
-            flag = true;
-            Voo=0.0;
-            while (flag) {
-                tiempo = d / (Voo * cos(angTest[0]));
-                Yo = Hd + (Voo * sin(angTest[i])) - (g*pow(tiempo,2)/2);
-                if (abs(Ho-Yo)<=rangoD) {
-                    flag = false;
+            flag = false;
+            //Se itera en velocidad inicial
+            for (int v=0; v<1000; v++) {
+                //Se itera en tiempo
+                for (double t=0.1; t<1000; t+=0.1) {
+                    Xd = posXd(v,angTest[i]*pi/180,t);
+                    Yd = posYd(v,angTest[i]*pi/180,t);
+                    dist = distancia(0,Ho,Xd,Yd);
+                    if (dist <=rangoD) {
+                        tiempo = t;
+                        Voo = v;
+                        flag = true;
+                        break;
+                    }
                 }
-                Voo+=0.1;
+                if (flag) break;
             }
-            cout << "Para angulo " << angTest[i] << " y velocidad " << Voo << endl;
+            cout << "Para angulo " << angTest[i] << " y velocidad " << Voo << " se logra generar danio en X=" << Xd << " y Y=" << Yd << " en tiempo " << tiempo << endl;
         }
+        break;
         break;
         break;
     case 3:
@@ -84,6 +106,9 @@ int main()
         cin >> Voo;
         cout << "Indique el angulo en grados del disparo: " << endl;
         cin >> angO;
+        //Para el angulo y velocidad dada se puede calcular el tiempo maximo de iteracion, esto para una distancia de maximo (d + rangoOfensivo)
+        maxTiempo = maxT(Voo,angO*pi/180);
+        // Con esos
         break;
     case 4:
         cout << endl << "Por favor ingrese los parametros de configuracion de disparo ofensivo" << endl;
@@ -94,6 +119,7 @@ int main()
         //Prueba cambios despues de limite
         break;
     case 5:
+        exit(0);
         break;
     default:
         cout << "La opcion seleccionada no existe";
@@ -102,19 +128,19 @@ int main()
     return 0;
 }
 
-double posXo(double Vo, int angulo, double t) {
+double posXo(double Vo, double angulo, double t) {
     return Vo*cos(angulo)*t; //Dada la configuracion del escenario se considera Xo(inicial) = 0
 }
 
-double posYo(double Vo, int angulo, double t) {
+double posYo(double Vo, double angulo, double t) {
     return Ho + Vo * sin(angulo) - (g*pow(t,2))/2;
 }
 
-double posXd(double Vo, int angulo, double t) {
+double posXd(double Vo, double angulo, double t) {
     return d - Vo*cos(angulo)*t;
 }
 
-double posYd(double Vo, int angulo, double t) {
+double posYd(double Vo, double angulo, double t) {
     return Hd + Vo * sin(angulo) - (g*pow(t,2))/2;
 }
 
@@ -122,5 +148,9 @@ double distancia(double X1, double Y1, double X2, double Y2) {
     double deltaX = X1 - X2;
     double deltaY = Y1 - Y2;
     return  abs(sqrt(pow(deltaX,2)+pow(deltaY,2)));
+}
+
+double maxT(double Vo, double angulo) {
+    return (d+rangoO)/(Vo*cos(angulo));
 }
 
