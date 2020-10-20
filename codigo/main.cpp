@@ -59,6 +59,9 @@ int main()
                 for (double t=0.1; t<1000; t+=0.1) {
                     Xo = posXo(v,angTest[i]*pi/180,t);
                     Yo = posYo(v,angTest[i]*pi/180,t);
+                    // Se limita para que el escenario tenga piso en 0,
+                    // asi que si se dan valores negativos no se tienen en cuenta.
+                    if (Yo<0) continue;
                     dist = distancia(Xo,Yo,d,Hd);
                     if (dist <=rangoO) {
                         tiempo = t;
@@ -85,6 +88,9 @@ int main()
                 for (double t=0.1; t<1000; t+=0.1) {
                     Xd = posXd(v,angTest[i]*pi/180,t);
                     Yd = posYd(v,angTest[i]*pi/180,t);
+                    // Se limita para que el escenario tenga piso en 0,
+                    // asi que si se dan valores negativos no se tienen en cuenta.
+                    if (Yd<0) continue;
                     dist = distancia(0,Ho,Xd,Yd);
                     if (dist <=rangoD) {
                         tiempo = t;
@@ -98,9 +104,9 @@ int main()
             cout << "Para angulo " << angTest[i] << " y velocidad " << Voo << " se logra generar danio en X=" << Xd << " y Y=" << Yd << " en tiempo " << tiempo << endl;
         }
         break;
-        break;
-        break;
     case 3:
+        Vod = 0;
+        flag = false;
         cout << endl << "Por favor ingrese los parametros de configuracion de disparo ofensivo" << endl;
         cout << "Indique la velocidad inicial (m/s) del disparo: ";
         cin >> Voo;
@@ -109,7 +115,6 @@ int main()
         //Para el angulo y velocidad dada se puede calcular el tiempo maximo de iteracion, esto para una distancia de maximo (d + rangoOfensivo)
         maxTiempo = maxT(Voo,angO*pi/180);
         // Con este tiempo maximo primero se analiza si el disparo podría hacer daño
-        flag = false;
         //Se itera en tiempo hasta el maxTiempo
         for (double t=0.1; t<maxTiempo; t+=0.1) {
             Xo = posXo(Voo,angO*pi/180,t);
@@ -123,6 +128,36 @@ int main()
         }
         // Si el disparo ofensivo puede hacer daño, defino un angulo fijo de defensa 45 y simulo velocidades
         if (flag) {
+            //Se reutiliza bandera en este caso para saber si la velocidad evaluada puede evitar el disparo ofensivo
+            flag = false;
+            //Se itera en velocidad inicial
+            for (int v=1; v<1000; v++) {
+                //Se itera en tiempo hasta el maxTiempo
+                for (double t=0.1; t<tiempo; t+=0.01) {
+                    Xo = posXo(Voo,angO*pi/180,t);
+                    Yo = posYo(Voo,angO*pi/180,t);
+                    Xd = posXd(v,45*pi/180,t+2.5);
+                    Yd = posYd(v,45*pi/180,t+2.5);
+                    dist = distancia(Xo,Yo,Xd,Yd);
+                    // Se limita para que el escenario tenga piso en 0,
+                    // asi que si se dan valores negativos no se tienen en cuenta.
+                    if ((Yd<0)||(Yo<0)) continue;
+                    else if (dist <=rangoD) {
+                        tiempo = t;
+                        Vod = v;
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag) break;
+            }
+            cout << "Para angulo ofensivo " << angO << " y velocidad " << Voo;
+            if (Vod==0) {
+                cout << " no se puede evitar el impacto." << endl;
+            } else {
+                cout<< " se puede evitar impacto con" << endl;
+                cout << "un angulo defensivo 45 y una velocidad " << Vod << " en tiempo " << tiempo + 2.5 << endl;
+            }
         } else {
             cout << "Los datos ingresados no pueden generar danio." << endl;
         }
