@@ -163,12 +163,62 @@ int main()
         }
         break;
     case 4:
+        Vod = 0;
+        flag = false;
         cout << endl << "Por favor ingrese los parametros de configuracion de disparo ofensivo" << endl;
         cout << "Indique la velocidad inicial (m/s) del disparo: ";
         cin >> Voo;
         cout << "Indique el angulo en grados del disparo: " << endl;
         cin >> angO;
-        //Prueba cambios despues de limite
+        //Para el angulo y velocidad dada se puede calcular el tiempo maximo de iteracion, esto para una distancia de maximo (d + rangoOfensivo)
+        maxTiempo = maxT(Voo,angO*pi/180);
+        // Con este tiempo maximo primero se analiza si el disparo podría hacer daño
+        //Se itera en tiempo hasta el maxTiempo
+        for (double t=0.1; t<maxTiempo; t+=0.1) {
+            Xo = posXo(Voo,angO*pi/180,t);
+            Yo = posYo(Voo,angO*pi/180,t);
+            dist = distancia(Xo,Yo,d,Hd);
+            if (dist <=rangoO) {
+                tiempo = t;
+                flag = true;
+                break;
+            }
+        }
+        // Si el disparo ofensivo puede hacer daño, defino un angulo fijo de defensa 45 y simulo velocidades
+        if (flag) {
+            //Se reutiliza bandera en este caso para saber si la velocidad evaluada puede evitar el disparo ofensivo
+            flag = false;
+            //Se itera en velocidad inicial
+            for (int v=1; v<1000; v++) {
+                //Se itera en tiempo hasta el maxTiempo
+                for (double t=0.1; t<tiempo; t+=0.01) {
+                    Xo = posXo(Voo,angO*pi/180,t);
+                    Yo = posYo(Voo,angO*pi/180,t);
+                    Xd = posXd(v,45*pi/180,t+2.5);
+                    Yd = posYd(v,45*pi/180,t+2.5);
+                    dist = distancia(Xo,Yo,Xd,Yd);
+                    // Se limita para que el escenario tenga piso en 0,
+                    // asi que si se dan valores negativos no se tienen en cuenta.
+                    if ((Yd<0)||(Yo<0)) continue;
+                    else if (dist <=rangoD) {
+                        tiempo = t;
+                        Vod = v;
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag) break;
+            }
+            cout << "Para angulo ofensivo " << angO << " y velocidad " << Voo;
+            if (Vod==0) {
+                cout << " no se puede evitar el impacto." << endl;
+            } else {
+                cout<< " se puede evitar impacto con" << endl;
+                cout << "un angulo defensivo 45 y una velocidad " << Vod << " en tiempo " << tiempo + 2.5 << endl;
+            }
+        } else {
+            cout << "Los datos ingresados no pueden generar danio." << endl;
+        }
         break;
     case 5:
         exit(0);
