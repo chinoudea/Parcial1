@@ -108,7 +108,24 @@ int main()
         cin >> angO;
         //Para el angulo y velocidad dada se puede calcular el tiempo maximo de iteracion, esto para una distancia de maximo (d + rangoOfensivo)
         maxTiempo = maxT(Voo,angO*pi/180);
-        // Con esos
+        // Con este tiempo maximo primero se analiza si el disparo podría hacer daño
+        flag = false;
+        //Se itera en tiempo hasta el maxTiempo
+        for (double t=0.1; t<maxTiempo; t+=0.1) {
+            Xo = posXo(Voo,angO*pi/180,t);
+            Yo = posYo(Voo,angO*pi/180,t);
+            dist = distancia(Xo,Yo,d,Hd);
+            if (dist <=rangoO) {
+                tiempo = t;
+                flag = true;
+                break;
+            }
+        }
+        // Si el disparo ofensivo puede hacer daño, defino un angulo fijo de defensa 45 y simulo velocidades
+        if (flag) {
+        } else {
+            cout << "Los datos ingresados no pueden generar danio." << endl;
+        }
         break;
     case 4:
         cout << endl << "Por favor ingrese los parametros de configuracion de disparo ofensivo" << endl;
